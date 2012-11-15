@@ -107,3 +107,8 @@ if (!function_exists('\gimle\i18n\_')) {
 		return $string;
 	}
 }
+
+function __ ($string)
+{
+	return _($string);
+}
