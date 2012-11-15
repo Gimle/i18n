@@ -38,7 +38,8 @@ if ((ENV_LEVEL & ENV_WEB) && ((!isset(System::$config['langfreeurl'])) || (!in_a
 		die();
 	}
 
-	function page ($part = false) {
+	function page ($part = false)
+	{
 		$path = array();
 		if ((isset($_SERVER['PATH_INFO'])) && (trim($_SERVER['PATH_INFO'], '/') !== '')) {
 			$path = explode('/', trim($_SERVER['PATH_INFO'], '/'));
@@ -63,8 +64,7 @@ if ((ENV_LEVEL & ENV_WEB) && ((!isset(System::$config['langfreeurl'])) || (!in_a
 
 	if (isset(System::$config['i18n']['gettext']['load'])) {
 		include System::$config['i18n']['gettext']['load'];
-	}
-	elseif (file_exists('/usr/share/php/php-gettext/gettext.inc')) {
+	} elseif (file_exists('/usr/share/php/php-gettext/gettext.inc')) {
 		include '/usr/share/php/php-gettext/gettext.inc';
 	}
 
@@ -80,25 +80,36 @@ if ((ENV_LEVEL & ENV_WEB) && ((!isset(System::$config['langfreeurl'])) || (!in_a
 				T_textdomain(System::$config['locale'][System::$settings['lang']]['domain']);
 			}
 
-			function _ ($string) {
-				$string = T_($string);
-
-				$pos = strrpos($string, '|');
-				if ($pos !== false) {
-					$string = substr($string, 0, $pos);
+			function _ ($string)
+			{
+				$tstring = T_($string);
+				$retry = false;
+				if ($tstring === $string) {
+					$retry = true;
 				}
-				return $string;
+
+				$pos = strrpos($tstring, '|');
+				if ($pos !== false) {
+					$tstring = substr($tstring, 0, $pos);
+				}
+
+				if ($retry === true) {
+					$tstring = T_($tstring);
+				}
+				return $tstring;
 			}
 		}
 	}
 } elseif (ENV_LEVEL & ENV_WEB) {
-	function page ($part = false) {
+	function page ($part = false)
+	{
 		return \gimle\core\page($part);
 	}
 }
 
 if (!function_exists('\gimle\i18n\_')) {
-	function _ ($string) {
+	function _ ($string)
+	{
 		$pos = strrpos($string, '|');
 		if ($pos !== false) {
 			$string = substr($string, 0, $pos);
