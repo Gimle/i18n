@@ -69,6 +69,35 @@ class Gettext
 	}
 
 	/**
+	 * Merge one or more po or pot files.
+	 *
+	 * @param mixed $files string or array with po file(s) to compile.
+	 * @return mixed boolean|binary Binary mo content, or false on failure.
+	 */
+	public function merge ($files)
+	{
+		if (!is_array($files)) {
+			$files = array($files);
+		}
+
+		$temp = \gimle\common\make_temp_file();
+
+		$command = 'msgcat -t ' . mb_internal_encoding() . ' -o ' . $temp . ' ' . implode(' ', $files);
+		$result = \gimle\common\run($command);
+
+		if ($result['return'] !== 0) {
+			unlink($temp);
+			$this->lastError = $result;
+			$this->lastError['command'] = $command;
+			return false;
+		}
+
+		$return = file_get_contents($temp);
+		unlink($temp);
+		return $return;
+	}
+
+	/**
 	 * Compile po file(s) to a mo file.
 	 *
 	 * @param mixed $files string or array with po file(s) to compile.
@@ -76,22 +105,15 @@ class Gettext
 	 */
 	public function compile ($files)
 	{
-		if (!is_array($files)) {
-			$files = array($files);
-		}
-		$tempPo = \gimle\common\make_temp_file();
-
-		$command = 'msgcat -t ' . mb_internal_encoding() . ' -o ' . $tempPo . ' ' . implode(' ', $files);
-		$result = \gimle\common\run($command);
-
-		if ($result['return'] !== 0) {
-			unlink($tempPo);
-			$this->lastError = $result;
-			$this->lastError['command'] = $command;
+		$merged = $this->merge($files);
+		if ($merged === false) {
 			return false;
 		}
 
+		$tempPo = \gimle\common\make_temp_file();
 		$tempMo = \gimle\common\make_temp_file();
+
+		file_put_contents($tempPo, $merged);
 
 		$command = 'msgfmt -c -v -o ' . $tempMo . ' ' . $tempPo;
 
