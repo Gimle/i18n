@@ -35,6 +35,7 @@ class Gettext
 
 		$options['-kT_gettext'] = '';
 		$options['-kT_'] = '';
+		$options['-k__'] = '';
 		$options['-L'] = 'PHP';
 		$options['--from-code'] = mb_internal_encoding();
 		$options['-o'] = '"' . $tempOutput . '"';
@@ -58,6 +59,11 @@ class Gettext
 
 		unlink($tempOutput);
 		unlink($tempFileList);
+
+		if ($pot === '') {
+			$this->lastError = 'No strings detected.';
+			return false;
+		}
 
 		if (($result['return'] !== 0) || (!empty($result['stout']))) {
 			$this->lastError = $result;
