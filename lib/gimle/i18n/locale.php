@@ -16,7 +16,7 @@ class Locale
 
 				$location  = BASE_PATH . $preferred;
 				$location .= (\gimle\core\page(0) !== false ? '/' . implode('/', \gimle\core\page()) : '');
-				if (substr(-1, 1, $_SERVER['PATH_INFO']) === '/') {
+				if (isset($_SERVER['PATH_INFO']) && (substr($_SERVER['PATH_INFO'], -1, 1) === '/')) {
 					$location .= '/';
 				}
 				if ($_SERVER['QUERY_STRING'] !== '') {
@@ -79,7 +79,6 @@ class Locale
 					trigger_error('php-gettext is not installed or setup correctly. Messages can not be translated.', E_USER_WARNING);
 				} else {
 					T_setlocale(LC_MESSAGES, System::$config['locale'][System::$settings['lang']]['messages']);
-
 					if ((isset(System::$config['i18n']['gettext']['i18n'])) && (isset(System::$config['locale'][System::$settings['lang']]['domain']))) {
 						T_bindtextdomain(System::$config['locale'][System::$settings['lang']]['domain'], System::$config['i18n']['gettext']['i18n']);
 						T_bind_textdomain_codeset(System::$config['locale'][System::$settings['lang']]['domain'], mb_internal_encoding());
