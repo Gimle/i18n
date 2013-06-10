@@ -15,12 +15,12 @@ class Locale
 				}
 
 				$location  = BASE_PATH . $preferred;
-				$location .= (\gimle\core\page(0) !== false ? '/' . implode('/', \gimle\core\page()) : '');
+				$location .= str_replace(array("\r", "\n"), "", (\gimle\core\page(0) !== false ? '/' . implode('/', \gimle\core\page()) : ''));
 				if (isset($_SERVER['PATH_INFO']) && (substr($_SERVER['PATH_INFO'], -1, 1) === '/')) {
 					$location .= '/';
 				}
 				if ($_SERVER['QUERY_STRING'] !== '') {
-					$location .= '&' . $_SERVER['QUERY_STRING'];
+					$location .= '&' . str_replace(array("\r", "\n"), "", $_SERVER['QUERY_STRING']);
 				}
 				header('Location: ' . $location);
 				die();
